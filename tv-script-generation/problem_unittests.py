@@ -87,18 +87,17 @@ def test_get_batches(get_batches):
             'Batches returned wrong shape.  Found {}'.format(batches.shape)
 
         for x in range(batches.shape[2]):
-            assert np.array_equal(batches[0,0,x], np.array(range(x * 35, x * 35 + batches.shape[3]))),\
-                'Batches returned wrong contents. For example, input sequence {} in the first batch was {}'.format(x, batches[0,0,x])
-            assert np.array_equal(batches[0,1,x], np.array(range(x * 35 + 1, x * 35 + 1 + batches.shape[3]))),\
-                'Batches returned wrong contents. For example, target sequence {} in the first batch was {}'.format(x, batches[0,1,x])
-
+            assert np.array_equal(batches[0, 0, x], np.array(range(x * 35, x * 35 + batches.shape[3]))),\
+                'Batches returned wrong contents. For example, input sequence {} in the first batch was {}'.format(x, batches[0, 0, x])
+            assert np.array_equal(batches[0, 1, x], np.array(range(x * 35 + 1, x * 35 + 1 + batches.shape[3]))),\
+                'Batches returned wrong contents. For example, target sequence {} in the first batch was {}'.format(x, batches[0, 1, x])
 
         last_seq_target = (test_batch_size-1) * 35 + 31
-        last_seq = np.array(range(last_seq_target, last_seq_target+ batches.shape[3]))
-        last_seq[-1] = batches[0,0,0,0]
+        last_seq = np.array(range(last_seq_target, last_seq_target + batches.shape[3]))
+        last_seq[-1] = batches[0, 0, 0, 0]
 
-        assert np.array_equal(batches[-1,1,-1], last_seq),\
-            'The last target of the last batch should be the first input of the first batch. Found {} but expected {}'.format(batches[-1,1,-1], last_seq)
+        assert np.array_equal(batches[-1, 1, -1], last_seq),\
+            'The last target of the last batch should be the first input of the first batch. Found {} but expected {}'.format(batches[-1, 1, -1], last_seq)
 
     _print_success_message()
 
@@ -166,8 +165,8 @@ def test_get_inputs(get_inputs):
             'Input has bad name.  Found name {}'.format(input_data.name)
 
         # Check rank
-        input_rank = 0 if input_data.get_shape() == None else len(input_data.get_shape())
-        targets_rank = 0 if targets.get_shape() == None else len(targets.get_shape())
+        input_rank = 0 if input_data.get_shape() is None else len(input_data.get_shape())
+        targets_rank = 0 if targets.get_shape() is None else len(targets.get_shape())
         lr_rank = 0 if lr.get_shape() == None else len(lr.get_shape())
 
         assert input_rank == 2,\
@@ -263,8 +262,10 @@ def test_build_nn(build_nn):
         # Check Shape
         assert logits.get_shape().as_list() == test_input_data_shape + [test_vocab_size], \
             'Outputs has wrong shape.  Found shape {}'.format(logits.get_shape())
-        assert final_state.get_shape().as_list() == [test_rnn_layer_size, 2, None, test_rnn_size], \
+        assert final_state.get_shape().as_list() == [test_rnn_layer_size, 2, test_input_data_shape[0], test_rnn_size], \
             'Final state wrong shape.  Found shape {}'.format(final_state.get_shape())
+        # assert final_state.get_shape().as_list() == [test_rnn_layer_size, 2, None, test_rnn_size], \
+        #     'Final state wrong shape.  Found shape {}'.format(final_state.get_shape())
 
     _print_success_message()
 
@@ -306,7 +307,6 @@ def test_pick_word(pick_word):
         # Check word is from vocab
         assert pred_word in test_int_to_vocab.values(),\
             'Predicted word not found in int_to_vocab.'
-
 
     _print_success_message()
 
